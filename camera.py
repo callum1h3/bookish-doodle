@@ -61,7 +61,7 @@ class StreamingHandler(server.BaseHTTPRequestHandler):
                     with output.condition:
                         output.condition.wait()
                         frame = output.frame
-                    self.wfile.write(b'--FRAME\r\n')
+                    self.wfile.write(b'--FRAME\n')
                     self.wfile.write(frame)
             except Exception as e:
                 logging.warning(

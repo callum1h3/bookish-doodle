@@ -74,7 +74,7 @@ class StreamingHandler(server.BaseHTTPRequestHandler):
 
 class StreamingServer(socketserver.ThreadingMixIn, server.HTTPServer):
     allow_reuse_address = True
-    daemon_threads = True
+    daemon_threads = False
 
 
 picam2 = Picamera2()

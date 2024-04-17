@@ -1,8 +1,6 @@
 #!/usr/bin/python3
 
-# Mostly copied from https://picamera.readthedocs.io/en/release-1.13/recipes2.html
-# Run this script, then point a web browser at http:<this-ip-address>:8000
-# Note: needs simplejpeg to be installed (pip3 install simplejpeg).
+# This is the same as mjpeg_server.py, but uses the h/w MJPEG encoder.
 
 import io
 import logging
@@ -11,7 +9,7 @@ from http import server
 from threading import Condition
 
 from picamera2 import Picamera2
-from picamera2.encoders import JpegEncoder
+from picamera2.encoders import MJPEGEncoder
 from picamera2.outputs import FileOutput
 
 PAGE = """\
@@ -64,11 +62,7 @@ class StreamingHandler(server.BaseHTTPRequestHandler):
                         output.condition.wait()
                         frame = output.frame
                     self.wfile.write(b'--FRAME\r\n')
-                    self.send_header('Content-Type', 'image/jpeg')
-                    self.send_header('Content-Length', len(frame))
-                    self.end_headers()
                     self.wfile.write(frame)
-                    self.wfile.write(b'\r\n')
             except Exception as e:
                 logging.warning(
                     'Removed streaming client %s: %s',
@@ -80,13 +74,13 @@ class StreamingHandler(server.BaseHTTPRequestHandler):
 
 class StreamingServer(socketserver.ThreadingMixIn, server.HTTPServer):
     allow_reuse_address = True
-    daemon_threads = False
+    daemon_threads = True
 
 
 picam2 = Picamera2()
 picam2.configure(picam2.create_video_configuration(main={"size": (480, 480)}))
 output = StreamingOutput()
-picam2.start_recording(JpegEncoder(), FileOutput(output))
+picam2.start_recording(MJPEGEncoder(), FileOutput(output))
 
 try:
     address = ('', 8000)

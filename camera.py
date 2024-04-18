@@ -77,7 +77,7 @@ class StreamingServer(socketserver.ThreadingMixIn, server.HTTPServer):
     allow_reuse_address = True
     daemon_threads = False
 
-encoder = JpegEncoder(q=70)
+encoder = JpegEncoder(q=30)
 picam2 = Picamera2()
 picam2.configure(picam2.create_video_configuration(main={"size": (480, 480)}))
 output = StreamingOutput()
